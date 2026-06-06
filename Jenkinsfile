@@ -62,10 +62,13 @@ pipeline {
 
         stage('Build APK') {
             steps {
-                bat '''
-                    flutter build apk --release --build-name=%APP_VERSION% --build-number=%APP_BUILD_NUMBER%
-                    powershell -NoProfile -ExecutionPolicy Bypass -Command "Copy-Item -LiteralPath 'build\\app\\outputs\\flutter-apk\\app-release.apk' -Destination 'build\\app\\outputs\\flutter-apk\\%APP_APK_NAME%' -Force"
-                '''
+                bat 'flutter build apk --release --build-name=%APP_VERSION% --build-number=%APP_BUILD_NUMBER%'
+            }
+        }
+
+        stage('Name APK') {
+            steps {
+                bat 'powershell -NoProfile -ExecutionPolicy Bypass -Command "Copy-Item -LiteralPath \'build\\app\\outputs\\flutter-apk\\app-release.apk\' -Destination \'build\\app\\outputs\\flutter-apk\\%APP_APK_NAME%\' -Force"'
             }
         }
     }
