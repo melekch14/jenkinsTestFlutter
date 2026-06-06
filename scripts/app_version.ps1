@@ -23,12 +23,15 @@ if (-not $versionLine) {
 $rawVersion = ($versionLine -replace '^\s*version\s*:\s*', '').Trim()
 $rawVersion = ($rawVersion -split '\s+#', 2)[0].Trim().Trim("'`"")
 
-if ($rawVersion -notmatch '^([0-9]+\.[0-9]+\.[0-9]+)\+([0-9]+)$') {
-    throw "Invalid Flutter version '$rawVersion'. Expected format: x.y.z+buildNumber, for example: 1.2.0+15"
+if ($rawVersion -notmatch '^([0-9]+\.[0-9]+\.[0-9]+)(?:\+([0-9]+))?$') {
+    throw "Invalid Flutter version '$rawVersion'. Expected format: x.y.z or x.y.z+buildNumber, for example: 1.2.0 or 1.2.0+15"
 }
 
 $appVersion = $Matches[1]
 $appBuildNumber = $Matches[2]
+if (-not $appBuildNumber) {
+    $appBuildNumber = if ($env:BUILD_NUMBER) { $env:BUILD_NUMBER } else { "1" }
+}
 
 Write-Output "APP_VERSION_FULL=$rawVersion"
 Write-Output "APP_VERSION=$appVersion"

@@ -45,6 +45,7 @@ pipeline {
                     env.APP_VERSION_FULL = appVersion.APP_VERSION_FULL
                     env.APP_VERSION = appVersion.APP_VERSION
                     env.APP_BUILD_NUMBER = appVersion.APP_BUILD_NUMBER
+                    env.APP_APK_NAME = "app-release-${env.APP_VERSION_FULL}.apk"
 
                     currentBuild.displayName = "#${env.BUILD_NUMBER} v${env.APP_VERSION_FULL}"
                     currentBuild.description = "App version: ${env.APP_VERSION_FULL}"
@@ -63,7 +64,7 @@ pipeline {
             steps {
                 bat '''
                     flutter build apk --release --build-name=%APP_VERSION% --build-number=%APP_BUILD_NUMBER%
-                    powershell -NoProfile -ExecutionPolicy Bypass -Command "Copy-Item -LiteralPath 'build\\app\\outputs\\flutter-apk\\app-release.apk' -Destination 'build\\app\\outputs\\flutter-apk\\app-release-v%APP_VERSION_FULL%.apk' -Force"
+                    powershell -NoProfile -ExecutionPolicy Bypass -Command "Copy-Item -LiteralPath 'build\\app\\outputs\\flutter-apk\\app-release.apk' -Destination 'build\\app\\outputs\\flutter-apk\\%APP_APK_NAME%' -Force"
                 '''
             }
         }
@@ -71,7 +72,7 @@ pipeline {
 
     post {
         success {
-            archiveArtifacts artifacts: 'build/app/outputs/flutter-apk/*.apk'
+            archiveArtifacts artifacts: "build/app/outputs/flutter-apk/${env.APP_APK_NAME}"
         }
     }
 }
